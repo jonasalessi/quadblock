@@ -5,10 +5,9 @@ function Tabuleiro(vctx) {
                               ,[1,1,1,1,1,0,0,0,0,0,1,1,1,1],[1,1,1,1,1,0,0,0,0,0,1,1,1,1],[1,1,1,1,1,0,0,0,0,0,1,1,1,1],[1,1,1,1,1,0,0,0,0,0,1,1,1,1],[1,1,1,1,1,0,0,0,0,0,1,1,1,1],[1,1,1,1,1,0,0,0,0,0,1,1,1,1]
                               ,[1,1,1,1,1,0,0,0,0,0,1,1,1,1],[1,1,1,1,1,0,0,0,0,0,1,1,1,1]];
     
-    var jogador1 = new Jogador('black', 100, 100);
-    var jogador2 = new Jogador('white', 100, 10);
+    var jogador1 = new Jogador('black', 100, 100, this);
+    var jogador2 = new Jogador('white', 100, 10, this);
     var bloco = [];
- 
     this.carregarBlocos = function carregarBlocos() {
         totalBlocoX = cenario.length;
         totalBlocoY = cenario[0].length;

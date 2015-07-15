@@ -1,6 +1,7 @@
-function Jogador(vcor, vx, vy) {
+function Jogador(vcor, vx, vy, vtabuleiro) {
     var x = vx;
     var y = vy;
+    var tabuleiro = vtabuleiro;
     var xUltimoBlocoValido = null;
     var yUltimoBlocoValido = null;
     var dx = 0;
@@ -9,10 +10,9 @@ function Jogador(vcor, vx, vy) {
     var ultimoDy = 0;
     var cartucheira = new Cartucheira();
     var cor = vcor;
-    var velocidade = 2.5;
-    var afastar = 10;
+    var afastar = 2;
     // 150%, será incrementado 150% da velocidade do jogador sobre a velocidade da bala
-    var razaoCentesima = 150 / 100;
+    var razaoCentesima = (150 / 100);
          
     this.getCor = function getCor() {
         return cor;
@@ -26,6 +26,11 @@ function Jogador(vcor, vx, vy) {
         return y;
     }
     
+    this.getVelocidade = function getVelocidade() {
+       var tamQuadrado =  this.getLargura() * this.getAltura();
+        return 0.002 * tamQuadrado;
+    }
+    
     this.getLargura = function getLargura() {
         return (larguraCanvas / totalBlocoX) / 1.7;
     }
@@ -35,14 +40,13 @@ function Jogador(vcor, vx, vy) {
     }
     
     this.pintar = function pintar(ctx) {
-        ctx.beginPath();
         ctx.fillStyle = cor;
-        ctx.rect(x, y, this.getLargura(), this.getAltura());
-        ctx.fill();
+        ctx.fillRect(x, y, this.getLargura(), this.getAltura());
         cartucheira.pintar(ctx, cor);
     }
 
     this.movimentar = function movimentar() {
+        var velocidade = this.getVelocidade();
         if (dx > 0) {
             if (dx < velocidade) {
                 dx += 0.1;
@@ -80,20 +84,17 @@ function Jogador(vcor, vx, vy) {
         var minhaLargura = this.getLargura();
         var minhaAltura = this.getAltura();
         if (bloco.getCor() != cor) {
-            if (x <= 0) {
-                x += 0.1;
-            }
-            if (y <= 0) {
-                y += 0.1;
-            }
-            if ((y + minhaAltura) >= alturaCanvas) {
-                y -= 0.1;
-            }
-            if ((x + minhaLargura) >= larguraCanvas) {
-                x -= 0.1;
-            }
-            xUltimoBlocoValido = bloco.getX();
+            if (x <= -minhaLargura) {
+                x = totalBlocoX * bloco.getLargura();
+            } else if (y <= -minhaAltura) {
+                y = totalBlocoY * bloco.getAltura();
+            } else if (y >= (minhaAltura + alturaCanvas)) {
+                y = 0;
+            } else if (x >= (minhaLargura + larguraCanvas)) {
+                x = 0;
+            } 
             yUltimoBlocoValido = bloco.getY();
+            xUltimoBlocoValido = bloco.getX();
             return;
         }
         var xMeio = x + (minhaLargura / 2);
@@ -109,12 +110,20 @@ function Jogador(vcor, vx, vy) {
         if (catetoX <= somaMetadeX && catetoY <= somaMetadeY) {
             if (ultimoDx > 0) {
                 x -= afastar;
+                dx = 0;
+                dy = 0;
             } else if (ultimoDx < 0) {
                 x += afastar;
+                dx = 0;
+                dy = 0;
             } else if (ultimoDy > 0) {
                 y -= afastar;
+                dy = 0;
+                dx = 0;
             } else if (ultimoDy < 0) {
                 y += afastar;
+                dy = 0;
+                dx = 0;
             }  else {
                 
             if (quantidadeBalaEmMovimento == 0) {
@@ -132,24 +141,40 @@ function Jogador(vcor, vx, vy) {
     }
 
     this.direita = function direita() {
+        if (dx != 0) {
+            return;
+        }
+        var velocidade = this.getVelocidade();
         dx = velocidade;
         ultimoDx = velocidade;
         ultimoDy = 0;
     }
 
     this.esquerda = function esquerda() {
+        if (dx != 0) {
+            return;
+        }
+        var velocidade = this.getVelocidade();
         dx = -velocidade;
         ultimoDx = -velocidade;
         ultimoDy = 0;
     }
 
     this.cima = function cima() {
+        if (dy != 0) {
+            return;
+        }
+        var velocidade = this.getVelocidade();
         dy = -velocidade;
         ultimoDy = -velocidade;
         ultimoDx = 0;
     }
 
     this.baixo = function baixo() {
+         if (dy != 0) {
+            return;
+        }
+        var velocidade = this.getVelocidade();
         dy = velocidade;
         ultimoDy = velocidade;
         ultimoDx = 0;

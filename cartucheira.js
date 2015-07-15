@@ -53,7 +53,6 @@ function Cartucheira() {
     this.verificarColisaoBloco = function verificarColisaoBloco(corJogador, bloco) {
         var total = bala.length;
         for (var i = 0; i < total; i++) {
-            //verificar colisao com bloco
             if (!bala[i].isMovimento()) {
                 continue;
             } 

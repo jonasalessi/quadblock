@@ -15,9 +15,9 @@ var dt ;
 var acumulador;
 var reiniciarJogo = false;
 
-function loop() {
+function loopGame() {
     if (somFundo.paused) {
-        somFundo.play();
+        //somFundo.play();
     }
    var agora = new Date().getTime();
    var passou = agora - ultimoTempo;
@@ -39,21 +39,25 @@ function loop() {
         somFundo.pause();
         reiniciar();        
     } else {
-        setTimeout(loop, 1000/fps);
+        setTimeout(loopGame, 1000/fps);
     }
 }
 
+this.iniciar = function iniciar() {
+    loopGame();
+}
+
 this.reiniciar = function reiniciar() {
+    context.fillStyle = "red";
+    context.font = "bold 56px serif";
+    var texto = reiniciarJogo == false ? "Iniciando jogo ..." : "Game over :(";
+    context.fillText(texto, (larguraCanvas/ 4), alturaCanvas / 2);
     fps = 120;
     ultimoTempo;
     dt = 1000 / fps; 
     acumulador = 0;
     tabuleiro = new Tabuleiro(context);
     tabuleiro.carregarBlocos();
-    context.fillStyle = "red";
-    context.font = "bold 56px serif";
-    var texto = reiniciarJogo == false ? "Iniciando jogo ..." : "Game over :(";
-    context.fillText(texto, (larguraCanvas/ 4), alturaCanvas / 2);
     reiniciarJogo = false;
     ultimoTempo = new Date().getTime();
     window.addEventListener('keydown', tabuleiro.onKeyDown,true);
@@ -64,7 +68,7 @@ this.reiniciar = function reiniciar() {
     somTiro.volume = 0.7;
     somGameOver.volume = 0.9;
     somFundo.volume = 0.5
-    setTimeout(loop, 1000);
+    setTimeout(loopGame, 500);
 }
 
 this.reiniciar();

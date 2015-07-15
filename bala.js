@@ -37,6 +37,9 @@ function Bala(ang) {
     
     
     this.verificarLimiteCenario = function verificarLimiteCenario() {
+        if (!this.isMovimento()) {
+            return;
+        }
         if (x < 0 || x > larguraCanvas || y > alturaCanvas || y < 0) {
             this.terminar();
         }
