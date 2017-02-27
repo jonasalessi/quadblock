@@ -1,18 +1,17 @@
-var quantidadeBalaEmMovimento = 0;
+var quantidadeBulletEmMovimento = 0;
 
-function Cartucheira() {
+function Cartucheira(blockName) {
     var bala = [];
     var contadorGiro = fps / 15;
     var contadorRecarga = fps / 20;
-        
     for (var i = 0; i < 5;i++) {
-        bala.push(new Bala(i * 72));
+        bala.push(new Bullet(i * 72, `${blockName}-${i}`));
     }
     
-    this.pegarBala = function pegarBala() {
+    this.pegarBullet = function pegarBullet() {
         var total = bala.length;
         for (var i = 0; i < total; i++) {
-            if (!bala[i].isMovimento() && bala[i].isAtiva()) {
+            if (!bala[i].isMoving() && bala[i].isAlive()) {
                 contadorRecarga = 20;
                 return bala[i];
             }
@@ -25,10 +24,10 @@ function Cartucheira() {
         contadorGiro -= 1;
         for (var i = 0; i < total; i++) {
             if (contadorGiro == 0) {
-                bala[i].incrementarAngulo();
+                bala[i].increaseAngle();
             }
-            bala[i].movimentarAngulo(centroX, centroY);
-            bala[i].verificarLimiteCenario();
+            bala[i].moveAngle(centroX, centroY);
+            bala[i].checkLimitScenario();
         }
          if (contadorGiro == 0) {
                 contadorRecarga -= 0.5;
@@ -36,31 +35,31 @@ function Cartucheira() {
           }
           if (contadorRecarga == 0) {
               contadorRecarga = fps / 20;
-              carregarUmaBala();  
+              carregarUmaBullet();  
           }
     }
     
-    function carregarUmaBala() {
+    function carregarUmaBullet() {
         var total = bala.length;
         for (var i = 0; i < total; i++) {
-            if (!bala[i].isMovimento() && !bala[i].isAtiva()) {
-                bala[i].ativarBala();
+            if (!bala[i].isMoving() && !bala[i].isAlive()) {
+                bala[i].enableBullet();
                 break;
             }
         }
     }
     
-    this.verificarColisaoBloco = function verificarColisaoBloco(corJogador, bloco) {
+    this.verificarColisaoBlock = function verificarColisaoBlock(corJogador, block) {
         var total = bala.length;
         for (var i = 0; i < total; i++) {
-            if (!bala[i].isMovimento()) {
+            if (!bala[i].isMoving()) {
                 continue;
             } 
-            quantidadeBalaEmMovimento += 1;
-            if (corJogador == bloco.getCor()) {
-                if (bala[i].isColidiuComBloco(bloco)) {
-                    bloco.setCor(corJogador == 'black' ? 'white': 'black');
-                    bloco.setBorda(corJogador == 'white' ? 'white': 'black');
+            quantidadeBulletEmMovimento += 1;
+            if (corJogador == block.cor) {
+                if (bala[i].isHitBlock(block)) {
+                    block.cor = (corJogador == 'black' ? 'white': 'black');
+                    block.borda = (corJogador == 'white' ? 'white': 'black');
                 }
             }
         }
@@ -69,7 +68,7 @@ function Cartucheira() {
     this.isAcerteiJogador = function isAcerteiJogador(jogador) {
         var total = bala.length;
         for (var i = 0; i < total; i++) {
-            if (bala[i].isMovimento() && bala[i].isAtingiuJogador(jogador)) {
+            if (bala[i].isMoving() && bala[i].isHitPlayer(jogador)) {
                 console.log('Morreu! ' + jogador.getCor());
                 return true;
             }
@@ -77,10 +76,10 @@ function Cartucheira() {
         return false;
     }
       
-    this.pintar = function pintar(ctx, cor) {
+    this.draw = function draw(ctx, cor) {
         var total = bala.length;
         for (var i = 0; i < total; i++) { 
-            bala[i].pintar(ctx, cor);
+            bala[i].draw(ctx, cor);
         }
     }
 

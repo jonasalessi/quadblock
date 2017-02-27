@@ -2,8 +2,8 @@ var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 var larguraCanvas = canvas.offsetWidth;  
 var alturaCanvas = canvas.offsetHeight;
-var totalBlocoX;
-var totalBlocoY;
+var totalBlockX;
+var totalBlockY;
 var tabuleiro;
 
 var somTiro;
@@ -34,7 +34,7 @@ function loopGame() {
     alturaCanvas = canvas.offsetHeight;
     canvas.height = alturaCanvas;
     canvas.width = larguraCanvas;
-    tabuleiro.pintar();
+    tabuleiro.draw();
     if (reiniciarJogo) {
         somFundo.pause();
         reiniciar();        
@@ -57,7 +57,7 @@ this.reiniciar = function reiniciar() {
     dt = 1000 / fps; 
     acumulador = 0;
     tabuleiro = new Tabuleiro(context);
-    tabuleiro.carregarBlocos();
+    tabuleiro.carregarBlocks();
     reiniciarJogo = false;
     ultimoTempo = new Date().getTime();
     window.addEventListener('keydown', tabuleiro.onKeyDown,true);

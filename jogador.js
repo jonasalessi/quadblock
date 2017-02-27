@@ -2,13 +2,13 @@ function Jogador(vcor, vx, vy, vtabuleiro) {
     var x = vx;
     var y = vy;
     var tabuleiro = vtabuleiro;
-    var xUltimoBlocoValido = null;
-    var yUltimoBlocoValido = null;
+    var xUltimoBlockValido = null;
+    var yUltimoBlockValido = null;
     var dx = 0;
     var dy = 0;
     var ultimoDx = 0;
     var ultimoDy = 0;
-    var cartucheira = new Cartucheira();
+    var cartucheira = new Cartucheira(vcor);
     var cor = vcor;
     var afastar = 2;
     // 150%, será incrementado 150% da velocidade do jogador sobre a velocidade da bala
@@ -32,17 +32,17 @@ function Jogador(vcor, vx, vy, vtabuleiro) {
     }
     
     this.getLargura = function getLargura() {
-        return (larguraCanvas / totalBlocoX) / 1.7;
+        return (larguraCanvas / totalBlockX) / 1.7;
     }
     
     this.getAltura = function getAltura() {
-        return (alturaCanvas / totalBlocoY) / 1.4;
+        return (alturaCanvas / totalBlockY) / 1.4;
     }
     
-    this.pintar = function pintar(ctx) {
+    this.draw = function draw(ctx) {
         ctx.fillStyle = cor;
         ctx.fillRect(x, y, this.getLargura(), this.getAltura());
-        cartucheira.pintar(ctx, cor);
+        cartucheira.draw(ctx, cor);
     }
 
     this.movimentar = function movimentar() {
@@ -72,41 +72,41 @@ function Jogador(vcor, vx, vy, vtabuleiro) {
         cartucheira.movimentar(x + (this.getLargura() / 2), y + (this.getAltura() / 2));
     }
     
-    this.verificarColisaoBloco = function verificarColisaoBloco(bloco) {
-        cartucheira.verificarColisaoBloco(cor, bloco);
+    this.verificarColisaoBlock = function verificarColisaoBlock(block) {
+        cartucheira.verificarColisaoBlock(cor, block);
     }
     
     this.isAcerteiJogador = function isAcerteiJogador(jogador) {
         return cartucheira.isAcerteiJogador(jogador);
     }
     
-    this.verificarLimite = function verificarLimite(bloco) {
+    this.verificarLimite = function verificarLimite(block) {
         var minhaLargura = this.getLargura();
         var minhaAltura = this.getAltura();
-        if (bloco.getCor() != cor) {
+        if (block.cor != cor) {
             if (x <= -minhaLargura) {
-                x = totalBlocoX * bloco.getLargura();
+                x = totalBlockX * block.largura;
             } else if (y <= -minhaAltura) {
-                y = totalBlocoY * bloco.getAltura();
+                y = totalBlockY * block.altura;
             } else if (y >= (minhaAltura + alturaCanvas)) {
                 y = 0;
             } else if (x >= (minhaLargura + larguraCanvas)) {
                 x = 0;
             } 
-            yUltimoBlocoValido = bloco.getY();
-            xUltimoBlocoValido = bloco.getX();
+            yUltimoBlockValido = block.y;
+            xUltimoBlockValido = block.x;
             return;
         }
         var xMeio = x + (minhaLargura / 2);
         var yMeio = y + (minhaAltura / 2);
-        var larguraBloco = bloco.getLargura();
-        var alturaBloco = bloco.getAltura();
-        var xBlocoMeio = bloco.getX() + (larguraBloco / 2);
-        var yBlocoMeio = bloco.getY() + (alturaBloco / 2)
-        var catetoX = xMeio > xBlocoMeio ? xMeio - xBlocoMeio : xBlocoMeio - xMeio;
-        var catetoY = yMeio > yBlocoMeio ? yMeio - yBlocoMeio : yBlocoMeio - yMeio;
-        var somaMetadeX = (larguraBloco / 2) + (minhaLargura / 2);
-        var somaMetadeY = (alturaBloco / 2) + (minhaAltura / 2);
+        var larguraBlock = block.largura;
+        var alturaBlock = block.altura;
+        var xBlockMeio = block.x + (larguraBlock / 2);
+        var yBlockMeio = block.y + (alturaBlock / 2)
+        var catetoX = xMeio > xBlockMeio ? xMeio - xBlockMeio : xBlockMeio - xMeio;
+        var catetoY = yMeio > yBlockMeio ? yMeio - yBlockMeio : yBlockMeio - yMeio;
+        var somaMetadeX = (larguraBlock / 2) + (minhaLargura / 2);
+        var somaMetadeY = (alturaBlock / 2) + (minhaAltura / 2);
         if (catetoX <= somaMetadeX && catetoY <= somaMetadeY) {
             if (ultimoDx > 0) {
                 x -= afastar;
@@ -126,12 +126,12 @@ function Jogador(vcor, vx, vy, vtabuleiro) {
                 dx = 0;
             }  else {
                 
-            if (quantidadeBalaEmMovimento == 0) {
-                if (xUltimoBlocoValido != null){
-                    x = xUltimoBlocoValido;
+            if (quantidadeBulletEmMovimento == 0) {
+                if (xUltimoBlockValido != null){
+                    x = xUltimoBlockValido;
                 }
-                 if (yUltimoBlocoValido != null){
-                    y = yUltimoBlocoValido;
+                 if (yUltimoBlockValido != null){
+                    y = yUltimoBlockValido;
                 }
             }
         }
@@ -189,7 +189,7 @@ function Jogador(vcor, vx, vy, vtabuleiro) {
         if (ultimoDx == 0 && ultimoDy == 0) {
             return;
         }
-        var bala = cartucheira.pegarBala();
+        var bala = cartucheira.pegarBullet();
         if (bala == null) {
             console.log("Sem municacao");
             return;    
@@ -197,7 +197,7 @@ function Jogador(vcor, vx, vy, vtabuleiro) {
         if (somTiro.paused == false) {
             somTiro.pause();
         }
-        bala.disparar(ultimoDx * razaoCentesima , ultimoDy * razaoCentesima, x + (this.getLargura() / 2), y);
+        bala.shoot(ultimoDx * razaoCentesima , ultimoDy * razaoCentesima, x + (this.getLargura() / 2), y);
         somTiro.play();
     }
 
